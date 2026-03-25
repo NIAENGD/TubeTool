@@ -7,33 +7,42 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <h1>TubeTool</h1>
-      <button id="downloadsButton" class="ghost">Downloads</button>
+    <header class="app-header">
+      <div class="brand-wrap">
+        <h1>TubeTool</h1>
+        <p class="subtitle">Fast playlist/video downloads with better controls</p>
+      </div>
+      <nav class="top-nav">
+        <button id="homeNavButton" class="ghost">Home</button>
+        <button id="downloadsButton" class="ghost">Downloads</button>
+        <button id="settingsButton" class="ghost">Settings</button>
+      </nav>
     </header>
 
     <main>
       <section id="analyzeView" class="card">
-        <h2>YouTube URL</h2>
-        <p>Paste a video or playlist URL and click Process.</p>
+        <h2>Analyze URL</h2>
+        <p>Paste a YouTube video or playlist URL.</p>
         <div class="row">
           <input id="urlInput" type="url" placeholder="https://www.youtube.com/watch?v=..." />
-          <button id="processButton">Process</button>
+          <button id="processButton">Analyze</button>
         </div>
         <p id="analyzeStatus" class="status"></p>
       </section>
 
       <section id="selectionView" class="card hidden">
-        <h2>Select Downloads</h2>
-        <p id="titleLabel"></p>
+        <div class="title-row">
+          <h2>Select Formats</h2>
+          <span id="titleLabel" class="pill">Untitled</span>
+        </div>
 
         <div class="column">
           <div class="category">
-            <label><input type="checkbox" id="audioAll" /> Select all audio formats</label>
+            <label class="bold"><input type="checkbox" id="audioAll" /> Select all audio formats</label>
             <div id="audioList"></div>
           </div>
           <div class="category">
-            <label><input type="checkbox" id="videoAll" /> Select all video formats</label>
+            <label class="bold"><input type="checkbox" id="videoAll" /> Select all video formats</label>
             <div id="videoList"></div>
           </div>
         </div>
@@ -51,8 +60,42 @@
       </section>
 
       <section id="downloadsView" class="card hidden">
-        <h2>Download Queue</h2>
+        <div class="title-row">
+          <h2>Download Queue</h2>
+          <button id="downloadsBackButton" class="ghost">Back</button>
+        </div>
         <div id="downloadsList"></div>
+      </section>
+
+      <section id="settingsView" class="card hidden">
+        <div class="title-row">
+          <h2>Settings</h2>
+          <button id="settingsSaveButton">Save</button>
+        </div>
+
+        <div class="settings-grid">
+          <label>
+            Output Folder
+            <input id="outputDirInput" type="text" placeholder="/Users/me/Downloads/TubeTool" />
+          </label>
+
+          <label>
+            Python Binary (optional)
+            <input id="pythonPathInput" type="text" placeholder="python3" />
+          </label>
+
+          <label>
+            Default Max Resolution
+            <input id="defaultResolutionInput" type="number" min="144" max="4320" step="1" />
+          </label>
+
+          <label class="toggle-row">
+            <input id="autoOpenToggle" type="checkbox" />
+            Open downloaded file location automatically
+          </label>
+        </div>
+
+        <p id="settingsStatus" class="status"></p>
       </section>
     </main>
 

@@ -25,7 +25,10 @@
     ],
     "extraMetadata": {
       "main": "src/main.js"
-    }
+    },
+    "asarUnpack": [
+      "backend/**/*"
+    ]
   },
   "keywords": [
     "electron",

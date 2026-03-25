@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -11,21 +12,82 @@ except ImportError:
     sys.exit(1)
 
 
+def is_storyboard_format(fmt):
+    format_id = str(fmt.get("format_id") or "").lower()
+    note = str(fmt.get("format_note") or "").lower()
+    ext = str(fmt.get("ext") or "").lower()
+    protocol = str(fmt.get("protocol") or "").lower()
+
+    return (
+        format_id.startswith("sb")
+        or "storyboard" in note
+        or ext == "mhtml"
+        or "mhtml" in protocol
+    )
+
+
+def extract_resolution(fmt):
+    height = fmt.get("height")
+    if isinstance(height, int):
+        return height
+
+    resolution = str(fmt.get("resolution") or "")
+    match = re.search(r"(\d{3,4})p", resolution.lower())
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def build_audio_label(fmt, format_id):
+    ext = fmt.get("audio_ext") or fmt.get("ext") or "audio"
+    abr = fmt.get("abr")
+    note = fmt.get("format_note") or "audio"
+
+    parts = [str(format_id), str(ext)]
+    if abr:
+        parts.append(f"{int(abr)} kbps")
+    parts.append(str(note))
+    return " | ".join(parts)
+
+
+def build_video_label(fmt, format_id, height):
+    ext = fmt.get("ext") or "video"
+    fps = fmt.get("fps")
+    note = fmt.get("format_note")
+    has_audio = fmt.get("acodec") not in (None, "none")
+
+    parts = [str(format_id), str(ext)]
+    if height:
+        parts.append(f"{height}p")
+    if fps:
+        parts.append(f"{int(fps)}fps")
+    if note:
+        parts.append(str(note))
+    parts.append("with audio" if has_audio else "video only")
+    return " | ".join(parts)
+
+
 def normalize_formats(info):
     out = []
     for f in info.get("formats", []):
         format_id = f.get("format_id")
         vcodec = f.get("vcodec")
         acodec = f.get("acodec")
-        height = f.get("height")
 
-        if not format_id:
+        if not format_id or is_storyboard_format(f):
             continue
 
-        kind = "audio" if vcodec == "none" else "video"
-        label = f"{format_id} | {f.get('ext', '?')} | {f.get('format_note', 'unknown')}"
-        if height:
-            label = f"{label} | {height}p"
+        if vcodec == "none" and acodec not in (None, "none"):
+            kind = "audio"
+            height = None
+            label = build_audio_label(f, format_id)
+        elif vcodec not in (None, "none"):
+            kind = "video"
+            height = extract_resolution(f)
+            label = build_video_label(f, format_id, height)
+        else:
+            continue
 
         out.append(
             {
@@ -36,6 +98,7 @@ def normalize_formats(info):
                 "has_audio": acodec != "none",
             }
         )
+
     return out
 
 
@@ -100,10 +163,18 @@ def progress_hook(data):
         print(json.dumps(event), flush=True)
 
 
+def normalize_output_dir(output_dir):
+    expanded = os.path.expanduser(str(output_dir or "")).strip()
+    if not expanded:
+        expanded = str(Path.home() / "Downloads" / "TubeTool")
+    return expanded
+
+
 def download(url, output_dir, selected, max_resolution):
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    normalized_output_dir = normalize_output_dir(output_dir)
+    Path(normalized_output_dir).mkdir(parents=True, exist_ok=True)
     ydl_opts = {
-        "outtmpl": os.path.join(output_dir, "%(title)s.%(ext)s"),
+        "outtmpl": os.path.join(normalized_output_dir, "%(title)s.%(ext)s"),
         "format": select_format(selected, max_resolution),
         "quiet": True,
         "no_warnings": True,

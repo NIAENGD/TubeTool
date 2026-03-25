@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('tubeTool', {
-  analyze: (url) => ipcRenderer.invoke('media:analyze', { url }),
+  analyze: (request) => ipcRenderer.invoke('media:analyze', typeof request === 'string' ? { url: request } : request),
   startDownload: (payload) => ipcRenderer.invoke('media:download', payload),
   listDownloads: () => ipcRenderer.invoke('media:downloads'),
   onProgress: (listener) => {

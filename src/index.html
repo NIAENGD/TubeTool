@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TubeTool</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>TubeTool</h1>
+      <button id="downloadsButton" class="ghost">Downloads</button>
+    </header>
+
+    <main>
+      <section id="analyzeView" class="card">
+        <h2>YouTube URL</h2>
+        <p>Paste a video or playlist URL and click Process.</p>
+        <div class="row">
+          <input id="urlInput" type="url" placeholder="https://www.youtube.com/watch?v=..." />
+          <button id="processButton">Process</button>
+        </div>
+        <p id="analyzeStatus" class="status"></p>
+      </section>
+
+      <section id="selectionView" class="card hidden">
+        <h2>Select Downloads</h2>
+        <p id="titleLabel"></p>
+
+        <div class="column">
+          <div class="category">
+            <label><input type="checkbox" id="audioAll" /> Select all audio formats</label>
+            <div id="audioList"></div>
+          </div>
+          <div class="category">
+            <label><input type="checkbox" id="videoAll" /> Select all video formats</label>
+            <div id="videoList"></div>
+          </div>
+        </div>
+
+        <div class="resolution">
+          <label for="resolutionRange">Max Resolution</label>
+          <input type="range" id="resolutionRange" min="144" max="2160" step="1" value="1080" />
+          <output id="resolutionValue">1080p</output>
+        </div>
+
+        <div class="row end">
+          <button id="backButton" class="ghost">Back</button>
+          <button id="downloadButton">Download Selected</button>
+        </div>
+      </section>
+
+      <section id="downloadsView" class="card hidden">
+        <h2>Download Queue</h2>
+        <div id="downloadsList"></div>
+      </section>
+    </main>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

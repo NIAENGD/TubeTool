@@ -1,0 +1,42 @@
+{
+  "name": "tubetool",
+  "version": "0.1.0",
+  "description": "Mac-only Electron YouTube downloader UI backed by yt-dlp",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "lint:js": "node --check src/main.js && node --check src/preload.js && node --check src/renderer.js",
+    "lint:py": "python3 -m py_compile backend/yt_worker.py",
+    "build:mac": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.tubetool.app",
+    "productName": "TubeTool",
+    "mac": {
+      "category": "public.app-category.video",
+      "target": [
+        "dmg"
+      ]
+    },
+    "files": [
+      "src/**/*",
+      "backend/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "src/main.js"
+    }
+  },
+  "keywords": [
+    "electron",
+    "youtube",
+    "yt-dlp",
+    "mac"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^36.0.0",
+    "electron-builder": "^26.0.12"
+  }
+}
